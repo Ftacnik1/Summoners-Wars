@@ -1,0 +1,5 @@
+Války vyvolávačů(elfové vs orkové)
+
+	Války vyvolávačů dvě sady postav(elfové,orkové). Hráč se snaží zabít soupeřova vyvolávače. Když jeden vyvolávač zemře hra končí.
+
+	Základ: každý typ jednotky by byl zvláštní class.  Kvůli možnosti zvláštních schopností(min u orků) nebudou mít orci a elfové stejné classy pro stejné postavy. Cíl zabít soupeřova vyvolávače(pouze pro 2 hráče). Min verze: Jednotky se pohybují po mapě notací, bez kouzel a bez hrdinů.  Max verze: s hrdiny, kouzly, specifickými vlastnostmi. Hráč píše čísla pouze při práci s kartami(útok, vyvolávání(pokládání karet) a pohyb je v pygame na mapě). Pokud by nebyla kouzla pro Orky (jako mražení): doplnil bych balíček orků několika žoldáky

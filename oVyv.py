@@ -1,25 +1,25 @@
-from ejed import *
-from eVal import EVal
+from ojed import *
+from oVal import OVal
 from karty import *
-class EVyvolavac:
+class OVyvolavac:
     def __init__(self,smer,map):
         self.voj=[self]      
         self.balicekVoj=self.balik()
         self.balicekRuka=list()
         self.balicekMagicky=5
 
-        self.slovnik={1: '1-Valecnik(2 utok, 1 zivot, cena 1)', 2: '2-Straz(1 utok(presny), 2 zivot, cena 2)', 3: '3-Lucistnik(1 utok(4 pole dostrel), 1 zivot, cena 1)', 4: '4-Zed', 5:"5-Hrdina(2 utok+1, 5 zivotu, cena 5)"}
+        self.slovnik={1: '1-Bojovnik(2 utok(kdyz hodi vice nez 4 opakuje utok), 1 zivot, cena 1)', 2: '2-Hromotluk(2 utok, 4 zivoty, cena 4)', 3: '3-Lucistnik(2 utok(3 pole dostrel ale musi se podarit oba), 2 zivoty, cena 1)', 4: '4-Zed', 5: '5-Hrdina(2 utok(kdyz hodi vice nez 4 opakuje utok), 5 zivot, cena 5)'}
         self.chuze=2
-        self.strelba=3
-        self.utok=2
-        self.zivoty=5
+        self.strelba=1
+        self.utok=4
+        self.zivoty=7
         self.typ="V"
         self.cislo=7
         self.smer=smer
         self.rodic=map
         self.moznostUtoku=1
         
-        self.mapa=[[0,self.vyvolej(1),0,0],[0,0,self.vyvolej(2),0],[self,0,self.vyvolej(4),0],[self.vyvolej(3),0,0,0],[0,0,0,0],[0,self.vyvolej(3),0,0]]
+        self.mapa=[[0,0,0,0],[0,0,self.vyvolej(2),0],[0,self.vyvolej(1),0,0],[self,0,self.vyvolej(4),0],[0,self.vyvolej(3),0,0],[0,0,0,self.vyvolej(1)]]
         self.otoc(smer)
         
     def otoc(self,smer):
@@ -50,7 +50,7 @@ class EVyvolavac:
             return(0)
         else:
             return(1)
-        
+
     def start(self):
         domich(self)
 
@@ -79,9 +79,7 @@ class EVyvolavac:
                     i=i
 
     def spec(self):
-        print("Kdyz kliknete na Bojovnika -B mmuzete ho stahnout ke zdi")
-        self.rodic.stazeni(1)
-        """Fce je v souboru karty"""
+        pass
     
     
     def konecTahu(self):
@@ -90,10 +88,10 @@ class EVyvolavac:
         odhoz(self)
 
     def vyvolej(self, cislo):
-        return((EVal(self)) if cislo==1 else (EStraz(self)) if cislo==2 else (ELuc(self))if cislo==3 else (Zed(self)) if cislo==4 else (EHrdJed(self) if cislo==5 else (EHrdJed(self))))
+        return((OVal(self)) if cislo==1 else (OStraz(self)) if cislo==2 else (OLuc(self))if cislo==3 else (Zed(self)) if cislo==4 else (OHrdJed(self)))
     
     def ocen(self,cislo):
-        return((EVal.cena) if cislo==1 else (EStraz.cena) if cislo==2 else (ELuc.cena)if cislo==3 else (Zed.cena) if cislo==4 else (EHrdJed.cena) if cislo==5 else (EHrdJed.cena))
+        return((OVal.cena) if cislo==1 else (OStraz.cena) if cislo==2 else (OLuc.cena)if cislo==3 else (Zed.cena) if cislo==4 else (OHrdJed.cena))
 
     def balik(self):
         balicek=list()

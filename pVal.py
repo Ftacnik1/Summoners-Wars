@@ -1,6 +1,6 @@
 import random
 kostka=[1,2,3,4,5,6]
-class EVal():
+class PVal():
     cena=1
     def __init__(self,vyv):
         self.vyv=vyv
@@ -31,7 +31,6 @@ class EVal():
 
     def zemri(self):
         self.vyv.voj.remove(self)
-        print("au")
         
         
     
