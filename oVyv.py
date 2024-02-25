@@ -1,6 +1,7 @@
 from ojed import *
 from oVal import OVal
 from karty import *
+import pygame
 class OVyvolavac:
     def __init__(self,smer,map):
         self.voj=[self]      
@@ -8,8 +9,10 @@ class OVyvolavac:
         self.balicekRuka=list()
         self.balicekMagicky=5
 
-        self.slovnik={1: '1-Bojovnik(2 utok(kdyz hodi vice nez 4 opakuje utok), 1 zivot, cena 1)', 2: '2-Hromotluk(2 utok, 4 zivoty, cena 4)', 3: '3-Lucistnik(2 utok(3 pole dostrel ale musi se podarit oba), 2 zivoty, cena 1)', 4: '4-Zed', 5: '5-Hrdina(2 utok(kdyz hodi vice nez 4 opakuje utok), 5 zivot, cena 5)'}
+        self.slovnik={1: '1-Bojovnik 2 utok, 1 zivot, cena 1', 2: '2-Hromotluk 2 utok, 4 zivoty, cena 4', 3: '3-Lucistnik 2 utok ,3 pole dostrel, 2 zivoty, cena 1', 4: '4-Zed', 5: '5-Hrdina 2 utok, 5 zivotu, cena 5'}
         self.chuze=2
+        self.vyv=self
+        self.pozadi = pygame.image.load('Ocard.jpg')
         self.strelba=1
         self.utok=4
         self.zivoty=7
@@ -54,9 +57,6 @@ class OVyvolavac:
     def start(self):
         domich(self)
 
-    def vyvolaniJednotek(self):
-        nakup(self,self.rodic)
-        """Fce je v souboru karty"""
 
 
 
@@ -85,7 +85,6 @@ class OVyvolavac:
     def konecTahu(self):
         self.rechuz()
         self.reboj()
-        odhoz(self)
 
     def vyvolej(self, cislo):
         return((OVal(self)) if cislo==1 else (OStraz(self)) if cislo==2 else (OLuc(self))if cislo==3 else (Zed(self)) if cislo==4 else (OHrdJed(self)))
@@ -105,7 +104,6 @@ class OVyvolavac:
         return(balicek)
     
     def zemri(self):
-        print("Hra konci vyvolavac je mrtev")
         self.rodic.np()
         while True:
             continue

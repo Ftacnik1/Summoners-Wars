@@ -1,13 +1,25 @@
 import pygame
 import random
+import os
+import webbrowser
+import sys
 # Initialize the game engine
 pygame.init()
+pygame.mixer.init()
 kostka=[1,2,3,4,5,6]
 BLACK    = (   0,   0,   0)
 BLUE    = (   0,   0,   255)
 RED = (   255,   0,   0)
 WHITE    = ( 255, 255, 255)
 GRAY   = ( 127, 127, 127)
+LBLUE =(173, 216, 230)
+
+zvuk=1
+pygame.mixer.music.load('music3.mp3')
+"""nekonecna smicka"""
+pygame.mixer.music.play(-1)  
+
+
 
 pocetRad=8
 posunRad=480/pocetRad
@@ -15,8 +27,24 @@ pocetSloupcu=6
 posunSloupcu=(720/pocetSloupcu)
 
 PI = 3.141592653
-size = (760, 500)
+size = (1025, 540)
 screen = pygame.display.set_mode(size)
+help = pygame.image.load('help.jpg')
+help = pygame.transform.scale(help, (40, 40))
+sound = pygame.image.load('sound.jpg')
+sound = pygame.transform.scale(sound, (40, 40))
+skip = pygame.image.load('skip.jpg')
+skip = pygame.transform.scale(skip, (80, 40))
+
+
+"""Navod"""
+# Get the current directory of the Python script
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Path to your HTML file (assuming it's named 'example.html')
+html_file_path = os.path.join(current_dir, 'SWnavod.html')
+
+
 
 """Jmeno okna"""
 pygame.display.set_caption("Valky vyvolavacu")
@@ -36,18 +64,175 @@ def colour(pozice):
         barvicka=BLUE
     return(barvicka)
 
+def pridejdopanelu(panel,text):
+    pocitadlo=0
+    kus=""
+    slovo=""
+    delka=44
+    for i in text:
+        pocitadlo+=1
+        slovo+=i
+        if ord(i)==32:
+            if pocitadlo>delka:
+                pocitadlo-=len(kus)
+                panel.append(kus)
+                kus=""
+            kus+=slovo
+            slovo=""
+    if len(kus)+len(slovo)>delka:
+        panel.append(kus)
+        panel.append(slovo)
+    else:
+        kus+=slovo
+        panel.append(kus)
+    return(panel)
 
+
+
+
+
+def pozadi():
+    elist=list()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+        elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN):
+            a=list(pygame.mouse.get_pos())
+            x = a[0]
+            y= a[1]
+            if x>970 and 1010>x:
+                if y>490 and 530>y:
+                    webbrowser.open_new_tab('file://' + html_file_path)
+
+            elif 41>x:
+                if y>490 and 530>y:
+                    global zvuk
+                    if zvuk==0:
+                        pygame.mixer.music.set_volume(1.0)
+                        zvuk=1
+                    else:
+                        pygame.mixer.music.set_volume(0.0)
+                        zvuk=0
+            elif x>465 and 545>x:
+                if y>490 and 530>y:
+                    pygame.event.post(pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_o, 'mod': 0}))
+
+        elist.append(event)
+    try:
+        return(elist [0])
+    except:
+        return(None)
+
+
+def vyvolaniterminal(ruka,vyv,mapA):
+    Moznost=1
+    done=False
+    while not done:
+            panel=list()
+            panel=pridejdopanelu(panel,str(f"Pocet karet v magickem balicku: {vyv.balicekMagicky}"))
+            for i in (ruka):
+                panel=pridejdopanelu(panel,str(vyv.slovnik[i]))
+            panel=pridejdopanelu(panel,"Zmacknete cislo karty, kterou chcete vyvolat")
+            Moznost=11
+            while(Moznost>8):
+                novapoz(mapA.mapa,panel)
+                try:
+                    event=pozadi()
+                    if (event.type == pygame.KEYDOWN and ((event.key)==111)):
+                        Moznost=0 
+                    else:  
+                        asciicislo=event.key
+                        Moznost=int(chr(asciicislo))
+
+                except:
+                    Moznost=11
+                       
+                  
+            if Moznost in ruka:
+                  if vyv.balicekMagicky<vyv.ocen(Moznost):
+                        panel=pridejdopanelu(panel,"Nedostatek penez v magickem balicku")
+                  else: 
+                        vyv.balicekMagicky-=vyv.ocen(Moznost)
+                        if Moznost!=4:
+                              mapA.VyvolejMapa(vyv.vyvolej(Moznost),vyv)
+                        else:
+                              mapA.VyvolejZed(vyv.vyvolej(Moznost),vyv)
+                        vyv.balicekRuka.remove(Moznost)
+            if Moznost==0:
+                done=True
+                              
+def odhazovaniterminal(ruka,vyv,mapA):
+    Moznost=1
+    done=False
+    while not done:
+            panel=list()
+            panel=pridejdopanelu(panel,str(f"Pocet karet v magickem balicku: {vyv.balicekMagicky}"))
+            for i in (ruka):
+                panel=pridejdopanelu(panel,str(vyv.slovnik[i]))
+            panel=pridejdopanelu(panel,"Zmacknete cislo karty, kterou chcete odhodit")
+            Moznost=11
+            while(Moznost>8):
+                novapoz(mapA.mapa,panel)
+                try:
+                    event=pozadi()
+                    if event.type == pygame.KEYDOWN and((event.key)==111):
+                        Moznost=0 
+                    elif event.type == pygame.KEYDOWN:
+                        asciicislo=event.key
+                        Moznost=int(chr(asciicislo))
+
+                except:
+                    Moznost=11
+                       
+                  
+            if Moznost in ruka:
+                vyv.balicekRuka.remove(Moznost)
+                vyv.balicekMagicky+=1
+
+            if Moznost==0:
+                done=True
+                              
 
 def start():
+    Odpoved=""
     screen.fill(BLACK)
     font=pygame.font.Font("freesansbold.ttf",30)
-    text=font.render("SW použijte terminál", True, BLUE, )
+    text=font.render("1 Elf, 2 Orc,3 pocitac rychly: ", True, BLUE, )
     textRect= text.get_rect()
     textRect.center=(360, 240)
     screen.blit(text,textRect)
     pygame.display.flip()
+    while Odpoved not in [0,1,2,3]:
+        try:
+            event=pozadi()
+            if (event.type == pygame.KEYDOWN):
+                asciicislo=event.key
+                Odpoved=int(chr(asciicislo))
+        except: 
+                continue
+    x=Odpoved
+    Odpoved=""
+    screen.fill(BLACK)
+    font=pygame.font.Font("freesansbold.ttf",30)
+    text=font.render("1 Elf, 2 Orc,3 pocitac pomaly: ", True, BLUE, )
+    textRect= text.get_rect()
+    textRect.center=(360, 240)
+    screen.blit(text,textRect)
+    pygame.display.flip()
+    while Odpoved not in [0,1,2,3]:
+        try:
+            event=pozadi()
+            if (event.type == pygame.KEYDOWN):
+                asciicislo=event.key
+                Odpoved=int(chr(asciicislo))
+        except: 
+                continue
+    return(x,Odpoved)
 
-def novapoz(Sachovnice):
+def novapoz(Sachovnice,obsah):
+    global help
     screen.fill(WHITE)
     x=30-(posunSloupcu)
     y=30
@@ -55,12 +240,20 @@ def novapoz(Sachovnice):
     for i in range(pocetSloupcu):
         x+=posunSloupcu
         for j in range(pocetRad):
-            pygame.draw.rect(screen, COLOUR, [int(x-30),int(y-30),posunSloupcu,posunRad])
+            if type(Sachovnice[i][j])==int: 
+                pygame.draw.rect(screen, COLOUR, [int(x-30),int(y-30),posunSloupcu,posunRad])
             y+=posunRad
             if (COLOUR==WHITE):
                 COLOUR=BLACK
             else:
                 COLOUR=WHITE
+            if type(Sachovnice[i][j])!=int:
+                pozadikarty = Sachovnice[i][j].vyv.pozadi
+                pozadikarty = pygame.transform.scale(pozadikarty, (posunSloupcu, posunRad))
+                if Sachovnice[i][j].vyv.smer==1:
+                    pozadikarty = pygame.transform.rotate(pozadikarty, 180)
+                screen.blit(pozadikarty, (x-30, y-posunRad-30))
+
         y=30
         if (COLOUR==WHITE and pocetRad%2==1) or (COLOUR==BLACK and pocetRad%2==0):
             COLOUR=WHITE
@@ -87,12 +280,32 @@ def novapoz(Sachovnice):
                     textRect.center=((kresx*posunSloupcu)-posunSloupcu/2,(kresy*posunRad)-posunRad/2)
                     screen.blit(text,textRect)
                 elif type(j)!=int:
-                    slovo=(f"{j.typ},{j.zivoty},{j.utok}")
+                    font=pygame.font.Font("gothicfont.ttf",int((posunRad//5)*4))
+                    slovo=(f"{j.typ}{j.zivoty},{j.utok}")
                     barva=RED if j.smer==1 else BLUE
                     text=font.render(slovo, True, barva, )
                     textRect= text.get_rect()
                     textRect.center=((kresx*posunSloupcu)-posunSloupcu/2,(kresy*posunRad)-posunRad/2)
                     screen.blit(text,textRect)
+
+        """Tvorba okna pro komunikaci"""
+    pygame.draw.rect(screen, LBLUE, [int(735),int(0),275,480])
+    kde=0
+    global panelsoucobsah
+    panelsoucobsah=obsah
+    for i in obsah:
+        kde+=40
+        font=pygame.font.SysFont("Calibri", 15)
+        text=font.render(i, BLACK, BLACK, )
+        textRect= pygame.Rect(int(735),kde,275,kde+30)
+        textRect.center=(872,kde)
+        screen.blit(text,textRect)
+
+        """Napoveda"""
+    screen.blit(help, (970, 490))
+    screen.blit(sound, (0, 490))
+    screen.blit(skip, (465, 490))
+
     pygame.display.flip()
     
 def poloz(Sachovnice,co,vyv):
@@ -106,8 +319,7 @@ def poloz(Sachovnice,co,vyv):
         for j in i:
             zedy+=1
             if type(j)!=int:
-                if j.smer==vyv.smer and j.cislo==4:
-                    print("Zed")    
+                if j.smer==vyv.smer and j.cislo==4:    
                     if zedx>0:
                         Sachovnice[zedx-1][zedy]=1 if(Sachovnice[zedx-1][zedy]==0) else  Sachovnice[zedx-1][zedy]
                         
@@ -119,13 +331,16 @@ def poloz(Sachovnice,co,vyv):
 
                     if zedy<pocetRad-1:
                         Sachovnice[zedx][zedy+1]=1 if(Sachovnice[zedx][zedy+1]==0) else  Sachovnice[zedx][zedy+1]  
-    
+    panel=list()
+    panel=pridejdopanelu(panel,"Na policka na kterych je napis pol muzete polozit vasi kartu. ")
     while done==False:
-        novapoz(Sachovnice)                                     
+        novapoz(Sachovnice, panel)                                     
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and ((event.key)==111): 
                 odznaceni(Sachovnice)
                 done=True
+                co.vyv.balicekMagicky+=co.cena
+                co.vyv.balicekRuka.append(co.cislo)
 
             elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
                 a=list(pygame.mouse.get_pos())
@@ -141,9 +356,7 @@ def poloz(Sachovnice,co,vyv):
                     if Sachovnice[pozx][pozy]==1:
                         zved=1
                         Sachovnice[pozx][pozy]=co
-                        print("Jednotka polozena")
                         odznaceni(Sachovnice)
-                        novapoz(Sachovnice)
                         done=True
 
 def zed(Sachovnice,co,vyv):
@@ -163,9 +376,10 @@ def zed(Sachovnice,co,vyv):
                 else:
                     if zedy>3:
                         Sachovnice[zedx][zedy]=1  
-    
+    panel=list()
+    panel=pridejdopanelu(panel,"Na policka na kterych je napis pol muzete polozit vasi zed. ")
     while done==False:
-        novapoz(Sachovnice)                                     
+        novapoz(Sachovnice, panel)                                     
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and ((event.key)==111): 
                 done=True
@@ -187,7 +401,6 @@ def zed(Sachovnice,co,vyv):
                         Sachovnice[pozx][pozy]=co
                         print("Jednotka polozena")
                         odznaceni(Sachovnice)
-                        novapoz(Sachovnice)
                         done=True
 
 def pohyb(Sachovnice,vyv):
@@ -195,14 +408,16 @@ def pohyb(Sachovnice,vyv):
     chyba =0
     done=False
     pocitadlo=3
+    infopanel=list()
+    infopanel=pridejdopanelu(infopanel,"Klinete na jednotku kterou chcete pohybovat.")
+    infopanel=pridejdopanelu(infopanel,"Jednotkou je mozne udelat az dva pohyby za fazi.")
+    infopanel=pridejdopanelu(infopanel,"Pro ukonceni faze stisknete klavesu O")
+    novapoz(Sachovnice,infopanel)
     Sachovnice=odznaceni(Sachovnice)
-    print("Zmacknete O pro ukonceni faze")
     while not done:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                print("User asked to quit.")
-                done=True
-            elif event.type == pygame.KEYDOWN and ((event.key)==111): 
+        event=pozadi()
+        try:
+            if event.type == pygame.KEYDOWN and ((event.key)==111): 
                 done=True
             elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
                 prozprom=0
@@ -216,12 +431,12 @@ def pohyb(Sachovnice,vyv):
                 else:
                     chyba=0
                 if chyba==0:
-                    print(type(Sachovnice[pozx]))
+                    panel=list()
                     if (type(Sachovnice[pozx][pozy])!=int):
                         if  ((Sachovnice[pozx][pozy].smer==vyv.smer)and(Sachovnice[pozx][pozy].chuze>0) and ((pocitadlo>0)or Sachovnice[pozx][pozy].chuze==1 )):
                             zved=1
                             prozprom=Sachovnice[pozx][pozy]
-                            print("Kamen zvednut")
+                            panel=pridejdopanelu(infopanel+[],"Vybranou jednotkou se nyni muzete posunout na pole, oznacene pol")
                             pohybprom=1
                             if(pozx)%pocetSloupcu!=pocetSloupcu-1:
                                 if type(Sachovnice[pozx+1][pozy])==int:
@@ -235,7 +450,7 @@ def pohyb(Sachovnice,vyv):
                             if (pozy)%pocetRad!=0:
                                 if type(Sachovnice[pozx][pozy-1])==int:
                                     Sachovnice[pozx][pozy-1]=1
-                            novapoz(Sachovnice)
+                            novapoz(Sachovnice,panel)
                             zved=1
                             prozprom=Sachovnice[pozx][pozy]
 
@@ -248,15 +463,16 @@ def pohyb(Sachovnice,vyv):
                 pozc=(c//(720//pocetSloupcu))
                 pozd=(d//(480//pocetRad))
                 if Sachovnice[pozc][pozd]==1:
-                    print("Kamen polozen")
                     if Sachovnice[pozx][pozy].chuze==2:
                         pocitadlo-=1
                     Sachovnice[pozx][pozy].chuze-=1
                     Sachovnice[pozc][pozd]=Sachovnice[pozx][pozy]
                     Sachovnice[pozx][pozy]=0
                     odznaceni(Sachovnice)
+                    novapoz(Sachovnice,infopanel)
                     zved=0
-                    novapoz(Sachovnice)
+        except:
+            continue
                          
                 
         
@@ -319,16 +535,18 @@ def utok(tah, Sachovnice):
     chyba =0
     done=False
     pocitadlo=3
+    infopanel=list()
+    infopanel=pridejdopanelu(infopanel,"V utocne fazi muzete zautocit az tremi jednotkami. Kliknete na jednotku, kterou chcete zautocit a pak kliknete na jednotku, kterou chcete napadnout. Pro ukonceni faze zmacknete O.")
+    novapoz(Sachovnice,infopanel)
     while not done:
-        for event in pygame.event.get():
+        event=pozadi()
+        try:
             if pocitadlo==0:
                 done=True
-                
-            if event.type == pygame.QUIT:
-                print("User asked to quit.")
-                done=True
+
             elif event.type == pygame.KEYDOWN and ((event.key)==111): 
                 done=True
+
             elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
                 prozprom=0
                 a=list(pygame.mouse.get_pos())
@@ -345,11 +563,14 @@ def utok(tah, Sachovnice):
                         if  ((Sachovnice[pozx][pozy].smer==tah)and(Sachovnice[pozx][pozy].moznostUtoku>0)):
                             zved=1
                             prozprom=Sachovnice[pozx][pozy]
-                            print("Kamen pripraven")
-
+                            panel=pridejdopanelu(infopanel+[],"Jednotka kterou chcete utocit byla vybrana.")
+                            novapoz(Sachovnice,panel)
 
        
-                
+            elif (event.type == pygame.KEYDOWN and ((event.key)==118)) and zved==1:
+                zved=0
+                novapoz(Sachovnice,infopanel)
+
             elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==1:
                 b=list(pygame.mouse.get_pos())
                 c = b[0]
@@ -360,7 +581,6 @@ def utok(tah, Sachovnice):
                 if type(Sachovnice[pozc][pozd])==int:
                     pozc=pozc
                 elif (Sachovnice[pozc][pozd].smer!=tah)and(((pozc+1+Sachovnice[pozx][pozy].strelba>pozx)and(pozc<pozx)and(pozy==pozd)) or ((pozc-1-Sachovnice[pozx][pozy].strelba<pozx)and(pozc>pozx)and(pozy==pozd)) or ((pozd-1-Sachovnice[pozx][pozy].strelba<pozy)and(pozd>pozy)and(pozx==pozc)) or ((pozd+1+Sachovnice[pozx][pozy].strelba>pozy)and(pozd<pozy)and(pozx==pozc))):
-                    print("Utok polozen")
                     Sachovnice[pozx][pozy].moznostUtoku-=1
                     pocitadlo-=1
                     prezil=Sachovnice[pozx][pozy].boj(Sachovnice[pozc][pozd])
@@ -368,9 +588,12 @@ def utok(tah, Sachovnice):
                         Sachovnice[pozc][pozd]=0
                     
                     odznaceni(Sachovnice)
-                    print(prozprom)
                     zved=0
-                    novapoz(Sachovnice)
+                    panel=list()
+                    panel=pridejdopanelu(infopanel+[],"Vas utok byl proveden")
+                    novapoz(Sachovnice,panel)
+        except:
+            continue
 
 def stahni(Sachovnice,smer,kdo):
     zved=0
@@ -378,13 +601,14 @@ def stahni(Sachovnice,smer,kdo):
     done=False
     pocitadlo=3
     Sachovnice=odznaceni(Sachovnice)
-    print("Zmacknete O pro ukonceni faze")
+    infopanel=list()
+    infopanel=pridejdopanelu(infopanel,"V teto fazi muzete valecniky(B) stahnout ke zdi. Stisknete vybranou kartu a pak ji umistete na pole vyznacene pol")
+    infopanel=pridejdopanelu(infopanel,"Pro ukonceni faze zmacknete O")
+    novapoz(Sachovnice,infopanel)
     while not done:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                print("User asked to quit.")
-                done=True
-            elif event.type == pygame.KEYDOWN and ((event.key)==111): 
+        event=pozadi()
+        try:
+            if event.type == pygame.KEYDOWN and ((event.key)==111): 
                 done=True
             elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
                 prozprom=0
@@ -399,11 +623,10 @@ def stahni(Sachovnice,smer,kdo):
                     chyba=0
                 if chyba==0:
                     if (type(Sachovnice[pozx][pozy])!=int):
-                        print(Sachovnice[pozx][pozy].cislo)
                         if  (Sachovnice[pozx][pozy].smer==smer)and(Sachovnice[pozx][pozy].cislo==kdo):
                             zved=1
                             prozprom=Sachovnice[pozx][pozy]
-                            print("Kamen zvednut")
+                            panel=pridejdopanelu(infopanel+[],"Vybranou jednotku nyni muzete umistit ke zdi.")
                             pohybprom=1
                             zedx=-1
                             for i in Sachovnice:
@@ -412,20 +635,19 @@ def stahni(Sachovnice,smer,kdo):
                                 for j in i:
                                     zedy+=1
                                     if type(j)!=int:
-                                        if j.smer==smer and j.cislo==4:
-                                            print("Zed")   
+                                        if j.smer==smer and j.cislo==4:   
                                             if zedx>0:
                                                 Sachovnice[zedx-1][zedy]=1 if(Sachovnice[zedx-1][zedy]==0) else  Sachovnice[zedx-1][zedy]
                         
-                                            if zedx<5:
+                                            if zedx<pocetSloupcu-1:
                                                 Sachovnice[zedx+1][zedy]=1 if(Sachovnice[zedx+1][zedy]==0) else  Sachovnice[zedx+1][zedy]
 
                                             if zedy>0:
                                                 Sachovnice[zedx][zedy-1]=1 if(Sachovnice[zedx][zedy-1]==0) else  Sachovnice[zedx][zedy-1]
 
-                                            if zedy<7:
+                                            if zedy<pocetRad-1:
                                                 Sachovnice[zedx][zedy+1]=1 if(Sachovnice[zedx][zedy+1]==0) else  Sachovnice[zedx][zedy+1]
-                            novapoz(Sachovnice)
+                            novapoz(Sachovnice,panel)
                             zved=1
                             prozprom=Sachovnice[pozx][pozy]
 
@@ -438,12 +660,13 @@ def stahni(Sachovnice,smer,kdo):
                 pozc=(c//(720//pocetSloupcu))
                 pozd=(d//(480//pocetRad))
                 if Sachovnice[pozc][pozd]==1:
-                    print("Kamen polozen")
                     Sachovnice[pozc][pozd]=Sachovnice[pozx][pozy]
                     Sachovnice[pozx][pozy]=0
                     odznaceni(Sachovnice)
                     zved=0
-                    novapoz(Sachovnice)
+                    novapoz(Sachovnice,infopanel)
+        except:
+            continue
                           
                 
         

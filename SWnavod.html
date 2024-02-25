@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Page Title</title>
+<title>Valky_vyvolavacu_navod</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 * {
   box-sizing: border-box;
@@ -63,6 +64,57 @@ body {
   flex-wrap: wrap;
 }
 
+.dropdown {
+  float: right;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;  
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: #ddd;
+  color: black;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  display: block; 
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  position:fixed;
+}
+
+
+
+
 
 /* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
 @media screen and (max-width: 400px) {
@@ -88,9 +140,18 @@ body {
   <a href="#ch04">Odhoz</a>
   <a href="#ch05">Cíl hry</a>
   <a href="#ch06">Pravidla a varianty</a>
-  <a href="#ch07" class="right">Elfové</a>
-  <a href="#ch08" class="right">Orkové</a>
-  <a href="#ch09" class="right">Trénink</a>
+  <a href="#ch10">Grafika</a>
+  <div class="dropdown">
+    <button class="dropbtn">Sady
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content" >
+<a href="#ch07" >Elfové</a>
+<a href="#ch08">Orkové</a>
+<a href="#ch09">Trénink</a>
+    </div>
+  </div>
+
 </div>
 
 <div class="chapter" id="ch01">
@@ -98,7 +159,8 @@ body {
 <p class="para">Pro vyvolání jednotek je potřeba mít dostatečné množství karet v magickém balíčku a volné místo u zdi.</p>
 <p class="para">Jednotky je možné vyvolávat pouze v první fázi hry. Místo u zdi je definováno jako pole sdílející jednu celou stranu s libovolnou zdí.</p>
 <p class="para">Místo vyvolaných a odhozených karet se vám na konci tahu doplní nové karty z hlavního balíčku (který je omezený)</p>
-<p class="para">Tah končí zmáčnkutím tlačítka <I>Enter</I> případně napsáním písmene do terminálu</p>
+<p class="para">Pro vyvolání jednotky stiskněte její číslo na klávesnici</p>
+<p class="para">Tah končí zmáčnkutím tlačítka <I>O</I></p>
 
 </div>
 
@@ -108,6 +170,7 @@ body {
 <p class="para">Jednotka se může pohybovat pouze po sousedících polích na kterých neleží jiná karta</p>
 <p class="para">Sousedící pole je definováno jako pole se kterým karta sdílí jednu stranu</p>
 <p class="para">Pohybovat se mohou pouze tři jednotky za celé kolo</p>
+<p class="para">Pro pohyb jednotky stiskněte jednotku se kterou chcete hýbat a pak klikněte na vyznačené pole kam ji chcete položit</p>
 
 </div>
 
@@ -119,7 +182,7 @@ body {
 <p class="para">Jednotky s označením C mohou napadat karty až ve vzdálenosti tří polí</p>
 <p class="para">Pokud je karta zabita přesouvá se do vašeho magického balíčku (hráče, který kartu zabil)</p>
 <p class="para"> <B> Všechna pravidla jsou podřízená pravidlům jednotlivých sad. </B></p>
-<p class="para">Tah končí stisknutím tlačítka O když je vybrané okno se hrou</p>
+<p class="para">Tah končí stisknutím tlačítka O</p>
 <p class="para"><I>Pokud jsou provedeny tři útoky hra vás automaticky přesune do další fáze</I></p>
 
 </div>
@@ -128,7 +191,8 @@ body {
 <h3 class="heading-1">Odhoz</h3>
 <p class="para">Každý hráč může na konci svého tahu odhodit libovolný počet karet.</p>
 <p class="para"><B>Počet karet je omezený a předem daný</B></p>
-<p class="para">Tah končí stisknutím tlačítka <I>Enter</I></p>
+<p class="para">Zmáčkněte číslo karty, kterou chcete odhodit na klávesnici.</p>
+<p class="para">Tah končí stisknutím klávesy <I>O</I></p>
 
 </div>
 
@@ -143,6 +207,14 @@ body {
 <h3 class="heading-1">Pravidla a varianty</h3>
 <p class="para">V originání hře je zakázáno střílet přes soupeřovy figury a útočná fáze se vynechává v prvním kole</p>
 <p class="para">Zároveň jsou populární varianty kdy jsou obě tyto možnosti povoleny, proto tato pravidla jsou v programu ponechána na dohodě mezi hráči</p>
+
+</div>
+
+<div class="chapter" id="ch10">
+<h3 class="heading-1">Grafická zjednodušení</h3>
+<p class="para">Již všechny fáze je možné ukončit stisknutím klávesy O, Kromě toho je možné stisknout zelenou šipku, která se chová stejně jako by jste stiskli O</p>
+<p class="para">V levém dolním rohu je ikona zvuku pokud ji stisknete zvuk se vypne, nebo zapne.</p>
+<p class="para"><B>Pro ukončení programu stiskněte křížek v pravém horním rohu.</B></p>
 
 </div>
 

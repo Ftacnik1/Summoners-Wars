@@ -1,15 +1,18 @@
 from ejed import *
 from eVal import EVal
 from karty import *
+import pygame
 class EVyvolavac:
     def __init__(self,smer,map):
         self.voj=[self]      
         self.balicekVoj=self.balik()
         self.balicekRuka=list()
         self.balicekMagicky=5
+        self.vyv=self
 
-        self.slovnik={1: '1-Valecnik(2 utok, 1 zivot, cena 1)', 2: '2-Straz(1 utok(presny), 2 zivot, cena 2)', 3: '3-Lucistnik(1 utok(4 pole dostrel), 1 zivot, cena 1)', 4: '4-Zed', 5:"5-Hrdina(2 utok+1, 5 zivotu, cena 5)"}
+        self.slovnik={1: '1-Valecnik 2 utok, 1 zivot, cena 1 ', 2: '2-Straz 1 utok, 2 zivoty, cena 2 ', 3: '3-Lucistnik 1 utok, 4 pole dostrel, 1 zivot, cena 1', 4: '4-Zed' , 5:"5-Hrdina 2 utok, 5 zivotu, cena 5 "}
         self.chuze=2
+        self.pozadi = pygame.image.load('EK.jpg')
         self.strelba=3
         self.utok=2
         self.zivoty=5
@@ -54,9 +57,6 @@ class EVyvolavac:
     def start(self):
         domich(self)
 
-    def vyvolaniJednotek(self):
-        nakup(self,self.rodic)
-        """Fce je v souboru karty"""
 
 
 
@@ -87,7 +87,6 @@ class EVyvolavac:
     def konecTahu(self):
         self.rechuz()
         self.reboj()
-        odhoz(self)
 
     def vyvolej(self, cislo):
         return((EVal(self)) if cislo==1 else (EStraz(self)) if cislo==2 else (ELuc(self))if cislo==3 else (Zed(self)) if cislo==4 else (EHrdJed(self) if cislo==5 else (EHrdJed(self))))
@@ -107,7 +106,6 @@ class EVyvolavac:
         return(balicek)
     
     def zemri(self):
-        print("Hra konci vyvolavac je mrtev")
         self.rodic.np()
         while True:
             continue

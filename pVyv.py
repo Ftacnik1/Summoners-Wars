@@ -1,5 +1,6 @@
 from pVal import PVal
 from karty import *
+import pygame
 class PVyvolavac:
     def __init__(self,smer,map):
         self.voj=[self]      
@@ -10,6 +11,8 @@ class PVyvolavac:
         self.slovnik={1: '1-Valecnik(2 utok, 1 zivot, cena 1)', 2: '2-Straz(1 utok(presny), 2 zivot, cena 2)',}
         self.chuze=0
         self.strelba=0
+        self.pozadi = pygame.image.load('Pcard.jpg')
+        self.vyv=self
         self.utok=0
         self.zivoty=12
         self.typ="V"
@@ -103,7 +106,6 @@ class PVyvolavac:
         return(balicek)
     
     def zemri(self):
-        print("Hra konci vyvolavac je mrtev")
         self.rodic.np()
         while True:
             continue

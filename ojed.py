@@ -67,6 +67,7 @@ class Zed():
         vyv.voj.append(self)
         self.strelba=False
         self.chuze=0
+        self.vyv=vyv
         self.utok=0
         self.zivoty=9
         self.typ="Z"
