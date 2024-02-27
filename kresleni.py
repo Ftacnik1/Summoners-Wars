@@ -59,10 +59,10 @@ def odznaceni(Sachovnice):
 def colour(pozice):
     print(pozice)
     if pozice[0]==0:
-        barvicka=RED
+        barva=RED
     else:
-        barvicka=BLUE
-    return(barvicka)
+        barva=BLUE
+    return(barva)
 
 def pridejdopanelu(panel,text):
     pocitadlo=0
@@ -96,7 +96,6 @@ def pozadi():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            sys.exit()
 
         elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN):
             a=list(pygame.mouse.get_pos())
@@ -121,7 +120,7 @@ def pozadi():
 
         elist.append(event)
     try:
-        return(elist [0])
+        return(elist+[])
     except:
         return(None)
 
@@ -138,16 +137,18 @@ def vyvolaniterminal(ruka,vyv,mapA):
             Moznost=11
             while(Moznost>8):
                 novapoz(mapA.mapa,panel)
-                try:
-                    event=pozadi()
-                    if (event.type == pygame.KEYDOWN and ((event.key)==111)):
-                        Moznost=0 
-                    else:  
-                        asciicislo=event.key
-                        Moznost=int(chr(asciicislo))
+                elist=pozadi()                                     
+                for event in elist:
+                    try:
+                        if (event.type == pygame.KEYDOWN and ((event.key)==111)):
+                            Moznost=0
+                            break 
+                        else:  
+                            asciicislo=event.key
+                            Moznost=int(chr(asciicislo))
 
-                except:
-                    Moznost=11
+                    except:
+                        Moznost=11
                        
                   
             if Moznost in ruka:
@@ -175,16 +176,19 @@ def odhazovaniterminal(ruka,vyv,mapA):
             Moznost=11
             while(Moznost>8):
                 novapoz(mapA.mapa,panel)
-                try:
-                    event=pozadi()
-                    if event.type == pygame.KEYDOWN and((event.key)==111):
-                        Moznost=0 
-                    elif event.type == pygame.KEYDOWN:
-                        asciicislo=event.key
-                        Moznost=int(chr(asciicislo))
+                elist=pozadi()                                     
+                for event in elist:
+                    try:
+                        if event.type == pygame.KEYDOWN and((event.key)==111):
+                            Moznost=0
+                            break 
+                        elif event.type == pygame.KEYDOWN:
+                            asciicislo=event.key
+                            Moznost=int(chr(asciicislo))
+                            break
 
-                except:
-                    Moznost=11
+                    except:
+                        Moznost=11
                        
                   
             if Moznost in ruka:
@@ -205,12 +209,13 @@ def start():
     screen.blit(text,textRect)
     pygame.display.flip()
     while Odpoved not in [0,1,2,3]:
-        try:
-            event=pozadi()
-            if (event.type == pygame.KEYDOWN):
-                asciicislo=event.key
-                Odpoved=int(chr(asciicislo))
-        except: 
+        elist=pozadi()                                     
+        for event in elist:
+            try:
+                if (event.type == pygame.KEYDOWN):
+                    asciicislo=event.key
+                    Odpoved=int(chr(asciicislo))
+            except: 
                 continue
     x=Odpoved
     Odpoved=""
@@ -222,12 +227,13 @@ def start():
     screen.blit(text,textRect)
     pygame.display.flip()
     while Odpoved not in [0,1,2,3]:
-        try:
-            event=pozadi()
-            if (event.type == pygame.KEYDOWN):
-                asciicislo=event.key
-                Odpoved=int(chr(asciicislo))
-        except: 
+        elist=pozadi()                                     
+        for event in elist:
+            try:
+                if (event.type == pygame.KEYDOWN):
+                    asciicislo=event.key
+                    Odpoved=int(chr(asciicislo))
+            except: 
                 continue
     return(x,Odpoved)
 
@@ -236,17 +242,17 @@ def novapoz(Sachovnice,obsah):
     screen.fill(WHITE)
     x=30-(posunSloupcu)
     y=30
-    COLOUR=BLACK
+    barva=BLACK
     for i in range(pocetSloupcu):
         x+=posunSloupcu
         for j in range(pocetRad):
             if type(Sachovnice[i][j])==int: 
-                pygame.draw.rect(screen, COLOUR, [int(x-30),int(y-30),posunSloupcu,posunRad])
+                pygame.draw.rect(screen, barva, [int(x-30),int(y-30),posunSloupcu,posunRad])
             y+=posunRad
-            if (COLOUR==WHITE):
-                COLOUR=BLACK
+            if (barva==WHITE):
+                barva=BLACK
             else:
-                COLOUR=WHITE
+                barva=WHITE
             if type(Sachovnice[i][j])!=int:
                 pozadikarty = Sachovnice[i][j].vyv.pozadi
                 pozadikarty = pygame.transform.scale(pozadikarty, (posunSloupcu, posunRad))
@@ -255,10 +261,10 @@ def novapoz(Sachovnice,obsah):
                 screen.blit(pozadikarty, (x-30, y-posunRad-30))
 
         y=30
-        if (COLOUR==WHITE and pocetRad%2==1) or (COLOUR==BLACK and pocetRad%2==0):
-            COLOUR=WHITE
+        if (barva==WHITE and pocetRad%2==1) or (barva==BLACK and pocetRad%2==0):
+            barva=WHITE
         else:
-            COLOUR=BLACK
+            barva=BLACK
     pygame.draw.line(screen,BLACK, [0,0],[720,0],2)
     pygame.draw.line(screen,BLACK, [720,0],[720,480],2)
     pygame.draw.line(screen,BLACK, [720,480],[0,480],2)
@@ -334,30 +340,35 @@ def poloz(Sachovnice,co,vyv):
     panel=list()
     panel=pridejdopanelu(panel,"Na policka na kterych je napis pol muzete polozit vasi kartu. ")
     while done==False:
-        novapoz(Sachovnice, panel)                                     
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and ((event.key)==111): 
-                odznaceni(Sachovnice)
-                done=True
-                co.vyv.balicekMagicky+=co.cena
-                co.vyv.balicekRuka.append(co.cislo)
+        
+        novapoz(Sachovnice, panel)
+        elist=pozadi()                                     
+        for event in elist:
+            try:
+                if event.type == pygame.KEYDOWN and ((event.key)==111): 
+                    odznaceni(Sachovnice)
+                    done=True
+                    co.vyv.balicekMagicky+=co.cena
+                    co.vyv.balicekRuka.append(co.cislo)
 
-            elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
-                a=list(pygame.mouse.get_pos())
-                x = a[0]
-                y= a[1]
-                pozx=(x//(720//pocetSloupcu))
-                pozy=(y//(480//pocetRad))
-                if x>720 or y>480:
-                    chyba=1
-                else:
-                    chyba=0
-                if chyba!=1:
-                    if Sachovnice[pozx][pozy]==1:
-                        zved=1
-                        Sachovnice[pozx][pozy]=co
-                        odznaceni(Sachovnice)
-                        done=True
+                elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
+                    a=list(pygame.mouse.get_pos())
+                    x = a[0]
+                    y= a[1]
+                    pozx=(x//(720//pocetSloupcu))
+                    pozy=(y//(480//pocetRad))
+                    if x>720 or y>480:
+                        chyba=1
+                    else:
+                        chyba=0
+                    if chyba!=1:
+                        if Sachovnice[pozx][pozy]==1:
+                            zved=1
+                            Sachovnice[pozx][pozy]=co
+                            odznaceni(Sachovnice)
+                            done=True
+            except:
+                continue
 
 def zed(Sachovnice,co,vyv):
     zved=0
@@ -380,28 +391,33 @@ def zed(Sachovnice,co,vyv):
     panel=pridejdopanelu(panel,"Na policka na kterych je napis pol muzete polozit vasi zed. ")
     while done==False:
         novapoz(Sachovnice, panel)                                     
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and ((event.key)==111): 
-                done=True
-                odznaceni(Sachovnice)
+        elist=pozadi()                                     
+        for event in elist:
+            try:
+                if event.type == pygame.KEYDOWN and ((event.key)==111): 
+                    done=True
+                    odznaceni(Sachovnice)
+                    co.vyv.balicekRuka.append(co.cislo)
 
-            elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
-                a=list(pygame.mouse.get_pos())
-                x = a[0]
-                y= a[1]
-                pozx=(x//(720//pocetSloupcu))
-                pozy=(y//(480//pocetRad))
-                if x>720 or y>480:
-                    chyba=1
-                else:
-                    chyba=0
-                if chyba!=1:
-                    if Sachovnice[pozx][pozy]==1:
-                        zved=1
-                        Sachovnice[pozx][pozy]=co
-                        print("Jednotka polozena")
-                        odznaceni(Sachovnice)
-                        done=True
+                elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
+                    a=list(pygame.mouse.get_pos())
+                    x = a[0]
+                    y= a[1]
+                    pozx=(x//(720//pocetSloupcu))
+                    pozy=(y//(480//pocetRad))
+                    if x>720 or y>480:
+                        chyba=1
+                    else:
+                        chyba=0
+                    if chyba!=1:
+                        if Sachovnice[pozx][pozy]==1:
+                            zved=1
+                            Sachovnice[pozx][pozy]=co
+                            print("Jednotka polozena")
+                            odznaceni(Sachovnice)
+                            done=True
+            except:
+                continue
 
 def pohyb(Sachovnice,vyv):
     zved=0
@@ -415,64 +431,71 @@ def pohyb(Sachovnice,vyv):
     novapoz(Sachovnice,infopanel)
     Sachovnice=odznaceni(Sachovnice)
     while not done:
-        event=pozadi()
-        try:
-            if event.type == pygame.KEYDOWN and ((event.key)==111): 
-                done=True
-            elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
-                prozprom=0
-                a=list(pygame.mouse.get_pos())
-                x = a[0]
-                y= a[1]
-                pozx=(x//(720//pocetSloupcu))
-                pozy=(y//(480//pocetRad))
-                if x>720 or y>480:
-                    chyba=1
-                else:
-                    chyba=0
-                if chyba==0:
-                    panel=list()
-                    if (type(Sachovnice[pozx][pozy])!=int):
-                        if  ((Sachovnice[pozx][pozy].smer==vyv.smer)and(Sachovnice[pozx][pozy].chuze>0) and ((pocitadlo>0)or Sachovnice[pozx][pozy].chuze==1 )):
-                            zved=1
-                            prozprom=Sachovnice[pozx][pozy]
-                            panel=pridejdopanelu(infopanel+[],"Vybranou jednotkou se nyni muzete posunout na pole, oznacene pol")
-                            pohybprom=1
-                            if(pozx)%pocetSloupcu!=pocetSloupcu-1:
-                                if type(Sachovnice[pozx+1][pozy])==int:
-                                    Sachovnice[pozx+1][pozy]=1
-                            if(pozx)%pocetSloupcu!=0:
-                                if type(Sachovnice[pozx-1][pozy])==int:
-                                    Sachovnice[pozx-1][pozy]=1
-                            if (pozy)%pocetRad!=pocetRad-1:
-                                if type(Sachovnice[pozx][pozy+1])==int:
-                                    Sachovnice[pozx][pozy+1]=1
-                            if (pozy)%pocetRad!=0:
-                                if type(Sachovnice[pozx][pozy-1])==int:
-                                    Sachovnice[pozx][pozy-1]=1
-                            novapoz(Sachovnice,panel)
-                            zved=1
-                            prozprom=Sachovnice[pozx][pozy]
+        elist=pozadi()                                     
+        for event in elist:
+            try:
+                if event.type == pygame.KEYDOWN and ((event.key)==111) and zved==0: 
+                    done=True
+
+                elif event.type == pygame.KEYDOWN and ((event.key)==111) and zved==1: 
+                        odznaceni(Sachovnice)
+                        novapoz(Sachovnice,infopanel)
+                        zved=0               
+            
+                elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
+                    prozprom=0
+                    a=list(pygame.mouse.get_pos())
+                    x = a[0]
+                    y= a[1]
+                    pozx=(x//(720//pocetSloupcu))
+                    pozy=(y//(480//pocetRad))
+                    if x>720 or y>480:
+                        chyba=1
+                    else:
+                        chyba=0
+                    if chyba==0:
+                        panel=list()
+                        if (type(Sachovnice[pozx][pozy])!=int):
+                            if  ((Sachovnice[pozx][pozy].smer==vyv.smer)and(Sachovnice[pozx][pozy].chuze>0) and ((pocitadlo>0)or Sachovnice[pozx][pozy].chuze==1 )):
+                                zved=1
+                                prozprom=Sachovnice[pozx][pozy]
+                                panel=pridejdopanelu(infopanel+[],"Vybranou jednotkou se nyni muzete posunout na pole, oznacene pol")
+                                pohybprom=1
+                                if(pozx)%pocetSloupcu!=pocetSloupcu-1:
+                                    if type(Sachovnice[pozx+1][pozy])==int:
+                                        Sachovnice[pozx+1][pozy]=1
+                                if(pozx)%pocetSloupcu!=0:
+                                    if type(Sachovnice[pozx-1][pozy])==int:
+                                        Sachovnice[pozx-1][pozy]=1
+                                if (pozy)%pocetRad!=pocetRad-1:
+                                    if type(Sachovnice[pozx][pozy+1])==int:
+                                        Sachovnice[pozx][pozy+1]=1
+                                if (pozy)%pocetRad!=0:
+                                    if type(Sachovnice[pozx][pozy-1])==int:
+                                        Sachovnice[pozx][pozy-1]=1
+                                novapoz(Sachovnice,panel)
+                                zved=1
+                                prozprom=Sachovnice[pozx][pozy]
 
        
                 
-            elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==1:
-                b=list(pygame.mouse.get_pos())
-                c = b[0]
-                d = b[1]
-                pozc=(c//(720//pocetSloupcu))
-                pozd=(d//(480//pocetRad))
-                if Sachovnice[pozc][pozd]==1:
-                    if Sachovnice[pozx][pozy].chuze==2:
-                        pocitadlo-=1
-                    Sachovnice[pozx][pozy].chuze-=1
-                    Sachovnice[pozc][pozd]=Sachovnice[pozx][pozy]
-                    Sachovnice[pozx][pozy]=0
-                    odznaceni(Sachovnice)
-                    novapoz(Sachovnice,infopanel)
-                    zved=0
-        except:
-            continue
+                elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==1:
+                    b=list(pygame.mouse.get_pos())
+                    c = b[0]
+                    d = b[1]
+                    pozc=(c//(720//pocetSloupcu))
+                    pozd=(d//(480//pocetRad))
+                    if Sachovnice[pozc][pozd]==1:
+                        if Sachovnice[pozx][pozy].chuze==2:
+                            pocitadlo-=1
+                        Sachovnice[pozx][pozy].chuze-=1
+                        Sachovnice[pozc][pozd]=Sachovnice[pozx][pozy]
+                        Sachovnice[pozx][pozy]=0
+                        odznaceni(Sachovnice)
+                        novapoz(Sachovnice,infopanel)
+                        zved=0
+            except:
+                continue
                          
                 
         
@@ -539,134 +562,140 @@ def utok(tah, Sachovnice):
     infopanel=pridejdopanelu(infopanel,"V utocne fazi muzete zautocit az tremi jednotkami. Kliknete na jednotku, kterou chcete zautocit a pak kliknete na jednotku, kterou chcete napadnout. Pro ukonceni faze zmacknete O.")
     novapoz(Sachovnice,infopanel)
     while not done:
-        event=pozadi()
-        try:
-            if pocitadlo==0:
-                done=True
+        elist=pozadi()                                     
+        for event in elist:
+            try:
+                if pocitadlo==0:
+                    done=True
+            
+                elif event.type == pygame.KEYDOWN and ((event.key)==111) and zved==0: 
+                    done=True
 
-            elif event.type == pygame.KEYDOWN and ((event.key)==111): 
-                done=True
-
-            elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
-                prozprom=0
-                a=list(pygame.mouse.get_pos())
-                x = a[0]
-                y= a[1]
-                pozx=(x//(720//pocetSloupcu))
-                pozy=(y//(480//pocetRad))
-                if x>720 or y>480:
-                    chyba=1
-                else:
-                    chyba=0
-                if chyba==0:
-                    if (type(Sachovnice[pozx][pozy]))!=int:
-                        if  ((Sachovnice[pozx][pozy].smer==tah)and(Sachovnice[pozx][pozy].moznostUtoku>0)):
-                            zved=1
-                            prozprom=Sachovnice[pozx][pozy]
-                            panel=pridejdopanelu(infopanel+[],"Jednotka kterou chcete utocit byla vybrana.")
-                            novapoz(Sachovnice,panel)
+                elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
+                    prozprom=0
+                    a=list(pygame.mouse.get_pos())
+                    x = a[0]
+                    y= a[1]
+                    pozx=(x//(720//pocetSloupcu))
+                    pozy=(y//(480//pocetRad))
+                    if x>720 or y>480:
+                        chyba=1
+                    else:
+                        chyba=0
+                    if chyba==0:
+                        if (type(Sachovnice[pozx][pozy]))!=int:
+                            if  ((Sachovnice[pozx][pozy].smer==tah)and(Sachovnice[pozx][pozy].moznostUtoku>0)):
+                                zved=1
+                                panel=pridejdopanelu(infopanel+[],"Jednotka kterou chcete utocit byla vybrana.")
+                                novapoz(Sachovnice,panel)
 
        
-            elif (event.type == pygame.KEYDOWN and ((event.key)==118)) and zved==1:
-                zved=0
-                novapoz(Sachovnice,infopanel)
-
-            elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==1:
-                b=list(pygame.mouse.get_pos())
-                c = b[0]
-                d = b[1]
-
-                pozc=c//(720//pocetSloupcu)
-                pozd=(d//(480//pocetRad))
-                if type(Sachovnice[pozc][pozd])==int:
-                    pozc=pozc
-                elif (Sachovnice[pozc][pozd].smer!=tah)and(((pozc+1+Sachovnice[pozx][pozy].strelba>pozx)and(pozc<pozx)and(pozy==pozd)) or ((pozc-1-Sachovnice[pozx][pozy].strelba<pozx)and(pozc>pozx)and(pozy==pozd)) or ((pozd-1-Sachovnice[pozx][pozy].strelba<pozy)and(pozd>pozy)and(pozx==pozc)) or ((pozd+1+Sachovnice[pozx][pozy].strelba>pozy)and(pozd<pozy)and(pozx==pozc))):
-                    Sachovnice[pozx][pozy].moznostUtoku-=1
-                    pocitadlo-=1
-                    prezil=Sachovnice[pozx][pozy].boj(Sachovnice[pozc][pozd])
-                    if prezil==0:
-                        Sachovnice[pozc][pozd]=0
-                    
-                    odznaceni(Sachovnice)
+                elif (event.type == pygame.KEYDOWN and ((event.key)==111)) and zved==1:
                     zved=0
-                    panel=list()
-                    panel=pridejdopanelu(infopanel+[],"Vas utok byl proveden")
-                    novapoz(Sachovnice,panel)
-        except:
-            continue
+                    novapoz(Sachovnice,infopanel)
+
+                elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==1:
+                    b=list(pygame.mouse.get_pos())
+                    c = b[0]
+                    d = b[1]
+
+                    pozc=c//(720//pocetSloupcu)
+                    pozd=(d//(480//pocetRad))
+                    if type(Sachovnice[pozc][pozd])==int:
+                        pozc=pozc
+                    elif (Sachovnice[pozc][pozd].smer!=tah)and(((pozc+1+Sachovnice[pozx][pozy].strelba>pozx)and(pozc<pozx)and(pozy==pozd)) or ((pozc-1-Sachovnice[pozx][pozy].strelba<pozx)and(pozc>pozx)and(pozy==pozd)) or ((pozd-1-Sachovnice[pozx][pozy].strelba<pozy)and(pozd>pozy)and(pozx==pozc)) or ((pozd+1+Sachovnice[pozx][pozy].strelba>pozy)and(pozd<pozy)and(pozx==pozc))):
+                        Sachovnice[pozx][pozy].moznostUtoku-=1
+                        pocitadlo-=1
+                        prezil=Sachovnice[pozx][pozy].boj(Sachovnice[pozc][pozd])
+                        if prezil==0:
+                            Sachovnice[pozc][pozd]=0
+                    
+                        odznaceni(Sachovnice)
+                        zved=0
+                        panel=list()
+                        panel=pridejdopanelu(infopanel+[],"Vas utok byl proveden")
+                        novapoz(Sachovnice,panel)
+            except:
+                continue
 
 def stahni(Sachovnice,smer,kdo):
     zved=0
     chyba =0
     done=False
-    pocitadlo=3
     Sachovnice=odznaceni(Sachovnice)
     infopanel=list()
     infopanel=pridejdopanelu(infopanel,"V teto fazi muzete valecniky(B) stahnout ke zdi. Stisknete vybranou kartu a pak ji umistete na pole vyznacene pol")
     infopanel=pridejdopanelu(infopanel,"Pro ukonceni faze zmacknete O")
     novapoz(Sachovnice,infopanel)
     while not done:
-        event=pozadi()
-        try:
-            if event.type == pygame.KEYDOWN and ((event.key)==111): 
-                done=True
-            elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
-                prozprom=0
-                a=list(pygame.mouse.get_pos())
-                x = a[0]
-                y= a[1]
-                pozx=(x//(720//pocetSloupcu))
-                pozy=(y//(480//pocetRad))
-                if x>720 or y>480:
-                    chyba=1
-                else:
-                    chyba=0
-                if chyba==0:
-                    if (type(Sachovnice[pozx][pozy])!=int):
-                        if  (Sachovnice[pozx][pozy].smer==smer)and(Sachovnice[pozx][pozy].cislo==kdo):
-                            zved=1
-                            prozprom=Sachovnice[pozx][pozy]
-                            panel=pridejdopanelu(infopanel+[],"Vybranou jednotku nyni muzete umistit ke zdi.")
-                            pohybprom=1
-                            zedx=-1
-                            for i in Sachovnice:
-                                zedx+=1
-                                zedy=-1
-                                for j in i:
-                                    zedy+=1
-                                    if type(j)!=int:
-                                        if j.smer==smer and j.cislo==4:   
-                                            if zedx>0:
-                                                Sachovnice[zedx-1][zedy]=1 if(Sachovnice[zedx-1][zedy]==0) else  Sachovnice[zedx-1][zedy]
-                        
-                                            if zedx<pocetSloupcu-1:
-                                                Sachovnice[zedx+1][zedy]=1 if(Sachovnice[zedx+1][zedy]==0) else  Sachovnice[zedx+1][zedy]
+        elist=pozadi()                                     
+        for event in elist:
+            try:
+                if event.type == pygame.KEYDOWN and ((event.key)==111) and zved==0: 
+                    done=True
 
-                                            if zedy>0:
-                                                Sachovnice[zedx][zedy-1]=1 if(Sachovnice[zedx][zedy-1]==0) else  Sachovnice[zedx][zedy-1]
-
-                                            if zedy<pocetRad-1:
-                                                Sachovnice[zedx][zedy+1]=1 if(Sachovnice[zedx][zedy+1]==0) else  Sachovnice[zedx][zedy+1]
-                            novapoz(Sachovnice,panel)
-                            zved=1
-                            prozprom=Sachovnice[pozx][pozy]
-
-       
-                
-            elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==1:
-                b=list(pygame.mouse.get_pos())
-                c = b[0]
-                d = b[1]
-                pozc=(c//(720//pocetSloupcu))
-                pozd=(d//(480//pocetRad))
-                if Sachovnice[pozc][pozd]==1:
-                    Sachovnice[pozc][pozd]=Sachovnice[pozx][pozy]
-                    Sachovnice[pozx][pozy]=0
+                elif event.type == pygame.KEYDOWN and ((event.key)==111) and zved==1: 
                     odznaceni(Sachovnice)
                     zved=0
                     novapoz(Sachovnice,infopanel)
-        except:
-            continue
+
+                elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==0:
+                    prozprom=0
+                    a=list(pygame.mouse.get_pos())
+                    x = a[0]
+                    y= a[1]
+                    pozx=(x//(720//pocetSloupcu))
+                    pozy=(y//(480//pocetRad))
+                    if x>720 or y>480:
+                        chyba=1
+                    else:
+                        chyba=0
+                    if chyba==0:
+                        if (type(Sachovnice[pozx][pozy])!=int):
+                            if  (Sachovnice[pozx][pozy].smer==smer)and(Sachovnice[pozx][pozy].cislo==kdo):
+                                zved=1
+                                prozprom=Sachovnice[pozx][pozy]
+                                panel=pridejdopanelu(infopanel+[],"Vybranou jednotku nyni muzete umistit ke zdi.")
+                                pohybprom=1
+                                zedx=-1
+                                for i in Sachovnice:
+                                    zedx+=1
+                                    zedy=-1
+                                    for j in i:
+                                        zedy+=1
+                                        if type(j)!=int:
+                                            if j.smer==smer and j.cislo==4:   
+                                                if zedx>0:
+                                                    Sachovnice[zedx-1][zedy]=1 if(Sachovnice[zedx-1][zedy]==0) else  Sachovnice[zedx-1][zedy]
+                        
+                                                if zedx<pocetSloupcu-1:
+                                                    Sachovnice[zedx+1][zedy]=1 if(Sachovnice[zedx+1][zedy]==0) else  Sachovnice[zedx+1][zedy]
+
+                                                if zedy>0:
+                                                    Sachovnice[zedx][zedy-1]=1 if(Sachovnice[zedx][zedy-1]==0) else  Sachovnice[zedx][zedy-1]
+
+                                                if zedy<pocetRad-1:
+                                                    Sachovnice[zedx][zedy+1]=1 if(Sachovnice[zedx][zedy+1]==0) else  Sachovnice[zedx][zedy+1]
+                                novapoz(Sachovnice,panel)
+                                zved=1
+                                prozprom=Sachovnice[pozx][pozy]
+
+       
+                
+                elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.KEYDOWN) and zved==1:
+                    b=list(pygame.mouse.get_pos())
+                    c = b[0]
+                    d = b[1]
+                    pozc=(c//(720//pocetSloupcu))
+                    pozd=(d//(480//pocetRad))
+                    if Sachovnice[pozc][pozd]==1:
+                        Sachovnice[pozc][pozd]=Sachovnice[pozx][pozy]
+                        Sachovnice[pozx][pozy]=0
+                        odznaceni(Sachovnice)
+                        zved=0
+                        novapoz(Sachovnice,infopanel)
+            except:
+                continue
                           
                 
         

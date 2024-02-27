@@ -37,6 +37,13 @@ body {
   width: 100%;
 }
 
+#navbar1 {
+  overflow: hidden;
+  background-color: #333;
+  position: relative;
+
+}
+
 /* Style the navigation bar links */
 .navbar a {
   float: left;
@@ -123,17 +130,58 @@ body {
     width:100%;
   }
 }
+
+  .navbar input[type=text] {
+    padding: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-left: 16px;
+    width: 200px;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  /* Style the search button */
+  .search-button {
+    padding: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-left: 8px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* Change the background color of the search button when hovering */
+  .search-button:hover {
+    background-color: #0056b3;
+  }
+
+  /* Some basic styling for the search results */
+  #searchResults {
+    margin-top: 10px;
+  }
 </style>
 </head>
 <body>
-
 
 <div class="header">
   <h1>Války vyvolávačů</h1>
   <p>Návod k použití programu.</p>
 </div>
 
-<div class="navbar">
+
+
+<div class="navbar" id="navbar1">
+    <input type="text" id="searchInput" placeholder="Search...">
+  <button class="search-button" onclick="performSearch()">Search</button>
+</div>
+
+
+
+<div class="navbar" id="navbar2">
   <a href="#ch01">Vyvolání jednotek</a>
   <a href="#ch02">Pohyb</a>
   <a href="#ch03">Útok</a>
@@ -153,6 +201,38 @@ body {
   </div>
 
 </div>
+<div id="searchResults"></div>
+
+
+<script>
+function performSearch() {
+  const searchInput = document.getElementById("searchInput");
+  const searchText = searchInput.value.trim().toLowerCase();
+  const content = document.getElementById("content");
+  const searchResults = document.getElementById("searchResults");
+
+  searchResults.innerHTML = "";
+
+  if (!searchText) {
+    return;
+  }
+
+  const divs = content.getElementsByTagName("div");
+  let resultHTML = `<strong>Search Results (${searchText}):</strong><br>`;
+
+  for (let i = 0; i < divs.length; i++) {
+    const divContent = divs[i].innerText.toLowerCase();
+    const divId = divs[i].id;
+    if (divContent.includes(searchText)) {
+      resultHTML += `<a href="#${divId}">Klikněte sem pro zobrazení kapitoly s výsledkem (${divId})</a><br>`;
+    }
+  }
+
+  searchResults.innerHTML = resultHTML;
+}
+</script>
+
+<div id="content">
 
 <div class="chapter" id="ch01">
 <h3 class="heading-1">Vyvolání jednotek</h3>
@@ -274,6 +354,7 @@ body {
 <p class="para">V tomto módu se na poslední řadě objeví jednotky, které jdou o 1 (počítač pomalý) - 2 pole (počítač rychlý)</p>
 <p class="para">Všechny jednotky napadnou nepřátelské jednotky na poli před nimi.</p>
 <p class="para">Vyvolávač nemá možnost se hýbat a útočit.</p>
+</div></div>
 
 </body>
 </html>
