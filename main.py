@@ -1,6 +1,10 @@
 from eVyv import EVyvolavac
 from oVyv import OVyvolavac
 from pVyv import PVyvolavac
+import eSpec
+import zakladniFazeFce
+import pocitactahy
+import kartyterminal
 import kresleni
 class Mapa:
     def __init__(self):
@@ -17,13 +21,15 @@ class Mapa:
             for j in range(4):
                 self.mapa[i].append(self.player2.mapa[i][j])
         self.tah=self.player1
+        print(self.mapa)
         while True:
             self.zfaze()
             
     def np(self):
         panel=list()
         panel=kresleni.pridejdopanelu(panel,"Vyvolavac je mrtev hra konci")
-        kresleni.novapoz(self.mapa,)
+        kresleni.novapoz(self.mapa,panel)
+        kresleni.konec()
 
 
     def zfaze(self):
@@ -37,9 +43,9 @@ class Mapa:
             if self.tah.utok!=0:
                 print("V terminalu vyberte jednotku kterou chcete vyvolat.")
                 print("Jednotku pak polozte na policko vyznacene pol.")
-                kresleni.vyvolaniterminal(self.tah.balicekRuka,self.tah,self)
+                kartyterminal.vyvolaniterminal(self.tah.balicekRuka,self.tah,self)
             else:
-                kresleni.vyvzla(self.mapa, self.tah)
+                pocitactahy.vyvzla(self.mapa, self.tah)
 
         elif self.fazeHry==3:
             zbytecnaPromena=1
@@ -49,9 +55,9 @@ class Mapa:
             if self.tah.utok!=0:
                 print("Klinknete na jednotku kterou chcete hybat.")
                 print("Muzete ji posunout na vyznacena pole.")
-                kresleni.pohyb(self.mapa,self.tah)
+                zakladniFazeFce.pohyb(self.mapa,self.tah)
             else:
-                kresleni.pohybzla (self.mapa, self.tah)
+                pocitactahy.pohybzla (self.mapa, self.tah)
 
         elif self.fazeHry==5:
             if self.tah.utok!=0:
@@ -59,9 +65,9 @@ class Mapa:
                 print("Jednotku kterou pripravite musite pouzit")
                 print("Pokud danou jednotkou nemuzete zautocit ukoncete tah - O")
                 print("Po trech utocich pokracuje dalsi faze")
-                kresleni.utok(self.tah.smer, self.mapa)
+                zakladniFazeFce.utok(self.tah.smer, self.mapa)
             else:
-                kresleni.utokzla(self.mapa, self.tah)
+                pocitactahy.utokzla(self.mapa, self.tah)
 
         elif self.fazeHry==7:
             self.tah.spec()
@@ -70,20 +76,19 @@ class Mapa:
             self.fazeHry=0
             self.tah.konecTahu()
             if self.tah.utok!=0:
-                kresleni.odhazovaniterminal(self.tah.balicekRuka,self.tah,self)
+                kartyterminal.odhazovaniterminal(self.tah.balicekRuka,self.tah,self)
             self.tah= self.player1 if self.tah==self.player2 else self.player2
 
     def VyvolejMapa(self,fig,vyv):
-        kresleni.poloz(self.mapa,fig,vyv)
+        zakladniFazeFce.poloz(self.mapa,fig,vyv)
 
     def VyvolejZed(self,fig,vyv):
-        kresleni.zed(self.mapa,fig,vyv)
+        zakladniFazeFce.zed(self.mapa,fig,vyv)
 
 
 
-    def stazeni(self,kdo):
-        kresleni.stahni(self.mapa,self.tah.smer,kdo)
-
+    def stazeni(self,cislojednotky):
+        eSpec.stahni(self.mapa,self.tah.smer,cislojednotky)
 mapA=Mapa()
 while(True):
     zbytecnaPromena=1
